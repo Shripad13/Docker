@@ -358,3 +358,18 @@ Main problems are Common Network & SHared Storage
 
  > Amazon Prime moved from microservices to monolith - its a prie example of moving containers to VM's
 It depends on what your application required.
+
+
+
+## multi-stage build
+A multi-stage build in Docker is a technique that allows you to use multiple FROM statements in a single Dockerfile—each one creating a separate build stage. This helps you build software in one stage and then copy only the necessary artifacts into a smaller, cleaner final image.
+
+# Why it’s useful ?
+Produces much smaller images
+Keeps build tools and dependencies out of the final image
+Improves security by reducing attack surface
+Makes builds more efficient and organized
+
+## How it works ?
+The builder stage installs dependencies and compiles the code.
+The final stage starts clean (nginx), copies only the compiled output, and excludes all build-time dependencies.
