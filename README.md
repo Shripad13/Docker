@@ -1,24 +1,22 @@
 # Docker
 
-
-
-A one physical machine are capital intensive 
+A one physical machine is capital intensive 
 
 Hypervisor is a software of virtualization.
 ESXI is a software from VMware for virtualization.
-Hyper-v is a software from Microsoftfor virtualization.
+Hyper-v is a software from Microsoft for virtualization.
 
 
 # Container -
-A container means a package that needed things in place & shipping it.
+A container means a package that has needed things in place & shipping it.
 1. Container is a package with just application, application libraries & the OS Modules.
-2. If a container is working on my machines, ut should also work on the other machines.
+2. If a container is working on my machines, it should also work on the other machines.
 3. With containers you dont spend too much on the hardware.
 4. With containers, you can start the container in leass than 1 sec & can stop the conatiner in sec
 
-Serverless means your not responsible for managing the servers.Cloud provider is the responsible for managing the server.
+Serverless means your not responsible for managing the servers. Cloud provider is the responsible for managing the server.
 
-## How to run the conatiners?
+## How to run the Containers?
 1. you should have a linux machine (flavour can be any opensource linux)
 2. Container runtime should be installed on that machine.
 3. Just run the Containers on the top of it.
@@ -42,7 +40,7 @@ Containers capable of consuming all the resources of OS, yet we need to control 
 ## WHy Docker became quite famous?
 1. Docker has built a very good & easy to use eco-system.
 2. Very good UX (User Experience)
-3.Supports a very HIGH level features.
+3. Supports a very HIGH level features.
 
 Docker-CE (Actual docker, use by companies)
 Docker (it has podman which is offered by Redhat)
@@ -113,25 +111,40 @@ Mutable which can be changed.
 
 Containers are not like OS, they are meant to run a single process at a time.
 
-Stopping the  container means killing the container
+Stopping the container means killing the container
 When you START the container means it will create a brand new Container
 
 > Our underline server will run on different network
 > Also Containers run on different network
 
-# Overlay Network enables the communication between server network & container network.
+> Overlay Network enables the communication between server network & container network.
 
-
-# Docker images directory - /var/lib/docker
-# Podman images directory - /var/lib/containers/storage
+# Images Directory
+Docker images directory - /var/lib/docker
+Podman images directory - /var/lib/containers/storage
 
 # you can see containers on Standard USer -  $HOME/.local/share/containers/storage/overlay
 
+# what is bridge network in docker?
+A bridge network in Docker is the default internal network that Docker creates for containers on a single host.
+A Docker bridge network is an internal network that allows containers on the same host to communicate.
+Each container gets its own IP address within the bridge subnet.
+Containers can also access the host network via NAT, but by default are isolated from external networks unless ports are exposed.
 
+1. Default network: If you don’t specify a network, Docker attaches containers to bridge.
+2. Container-to-container communication: Containers on the same bridge can talk using IP or container name.
+3. Port mapping to host: To access a container externally, you map container ports to host ports (e.g., -p 8080:80).
+4. Custom bridge networks: You can create your own bridge network for better DNS resolution and isolation.
+
+# Example- 
+docker network create my-bridge
+docker run --network my-bridge --name web nginx
+docker run --network my-bridge --name app my-app
+Here, web and app can communicate using container names (web, app).
 
 ############################################################################################
 
-##what is the command to install docker edition on linux server rhel 9
+## what is the command to install docker edition on linux server rhel 9
 
 # 1. Remove old Docker versions (if any)
 sudo dnf remove docker docker-client docker-client-latest docker-common docker-latest \
@@ -185,7 +198,7 @@ Force-removes (-f) the listed Docker images by ID
 
 ___________________________________________________________
 
-## DOcker Port
+## Docker Port
 
 sudo docker run -d -P nginx:latest
 -P means Randomly allocates the port
@@ -194,7 +207,7 @@ sudo docker run -d -P nginx:latest
 sudo docker run -d -P 80:80 nginx:latest
 --docker process runs on 80 redirect to port 80 for internet
 
-Command to enter into conatiner
+Command to enter into container
 sudo docker exec -it <container id>  --sh/--bash
 
 --sh /--bash - enters into shell/bash terminal
@@ -222,6 +235,16 @@ docker run -d -p 81:80 <container id>
 
 docker ps
 docker inspect <container id>
+
+Use Docker Hub or Amazon ECR for image storage
+
+# How do you monitor and manage logs of running containers?
+1. Logging & Monitoring: Centralized logging solutions like ELK Stack
+(Elasticsearch, Logstash, Kibana).
+2. VIew logs - docker logs -f container_name
+3. Configure log driver in docker-compose.yml
+
+# difference between CMD & ENTRYPOINT in docker?
 
 CMD & ENTRYPOINT are a kind of startup for container
 
@@ -281,8 +304,13 @@ df -Tkh
 
 ######## Docker Volumes Mapping ####
 1. Containers are ephermal & hence we lose the data if the container is deleted.
-2. In cases, we need to have the data persistent even if we lost or remove the container.
-3. A volume of host machine can be mapped to a container using -v option.
+2. ephermal - The container is temporary and short-lived – all its data and state are lost when it stops or is removed
+3. In cases, we need to have the data persistent even if we lost or remove the container.
+4. A volume of host machine can be mapped to a container using -v option.
+5. Filesystem is temporary – any changes inside the container are not saved to the host.
+6 .Stateless design – containers should store persistent data in volumes or external storage.
+7. Easy to recreate – you can stop, delete, and redeploy the container without losing the app setup.
+   
 
 -v <hostPath>:<containerPath>
 
@@ -294,6 +322,9 @@ Apps are of 2 types - Stateful & Stateless
 Apps which are dependent on storage or data are called as stateful appln
 Apps which are NOT dependent on storage or data are called as stateless appln
 
+# Docker containers are inherently stateless.
+By default, any changes made inside a container (files, logs, databases) are lost when the container stops or is removed.
+To make a container stateful, you need to use volumes, bind mounts, or external storage to persist data.
 
 Ex- Database is stateful application.
 Frontend and Backend are stateless application because even if you restart you will not lose data.
@@ -336,7 +367,7 @@ BUILD: Defines a variable to pass to the build command.
 > Dockerfile ---Build--->>  Docker Image ----Run--->> Docker Container
 
 
-# 
+# Steps -
 1. Through Terraform Create Instance
 2. Through Ansible Deploy the docker
 
@@ -350,14 +381,14 @@ BUILD: Defines a variable to pass to the build command.
  3. NETWORK is not tightly coupled, what if you have more than 3 containers of frontend, 3 containers of backend, how can you communicate? 
  4. If containers are running on independent machines, how to achieve the shared STORAGE concept?
 
-Main problems are Common Network & SHared Storage
+Main problems are Common Network & Shared Storage
 
  > TO overcome above challenges, we can use K8s Container Orchestration Tool.
 
 
 
- > Amazon Prime moved from microservices to monolith - its a prie example of moving containers to VM's
-It depends on what your application required.
+ > Amazon Prime moved from microservices to monolith - its a prime example of moving containers to VM's
+It depends on what your application & business required.
 
 
 
@@ -371,5 +402,5 @@ Improves security by reducing attack surface
 Makes builds more efficient and organized
 
 ## How it works ?
-The builder stage installs dependencies and compiles the code.
+The build stage installs dependencies and compiles the code.
 The final stage starts clean (nginx), copies only the compiled output, and excludes all build-time dependencies.
