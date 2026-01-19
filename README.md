@@ -256,7 +256,7 @@ Values in CMD can be Overriden
 3. Values in ENTRYPOINT cannot be overriden
 
 Ex - 
-$ ls -ltr
+ $ ls -ltr
 ls means ENTRYPOINT, -ltr means CMD
 
 In docker, if you mention any process by in a JSON format, it will be process of its own where the parent process id directly 1 which is the system process.
@@ -267,10 +267,10 @@ In docker, if you mention any process by in a JSON format, it will be process of
 
 ## How to publish the Docker images to docker hub?
 
-$ docker login docker.io
+ $ docker login docker.io
 --> enter your username & pwd
 
-$ docker push docker.io/sanraman/expense-base/frontend:v1
+ $ docker push docker.io/sanraman/expense-base/frontend:v1
 
 ___________________________________________________________
 
@@ -404,3 +404,16 @@ Makes builds more efficient and organized
 ## How it works ?
 The build stage installs dependencies and compiles the code.
 The final stage starts clean (nginx), copies only the compiled output, and excludes all build-time dependencies.
+
+# what is Mutable & immutable Infrastructure?
+Immutable Infrastructure is a concept where once a server or component is deployed, it is never modified. If an update or change is needed, a new version of the server or component is built and deployed, replacing the old one. This approach ensures consistency, reduces configuration drift, and simplifies rollback processes.   
+Mutable Infrastructure, on the other hand, allows for changes and updates to be made directly to the existing servers or components after they have been deployed. This traditional approach enables quick fixes and updates but can lead to inconsistencies over time as changes accumulate, making it harder to manage and maintain the infrastructure.
+
+# What are the different types of docker network & which is default network?
+Docker supports several types of networks to facilitate communication between containers and the outside world. The main types of Docker networks are:
+1. Bridge Network: This is the default network type for Docker containers. It creates a private internal network on the host machine, allowing containers to communicate with each other while being isolated from the host's network. Containers on the same bridge network can communicate using IP addresses or container names.
+2. Host Network: In this mode, a container shares the host's network stack. This means that the container can use the host's IP address and ports directly, which can improve performance but reduces isolation between the container and the host.
+3. Overlay Network: This network type allows containers running on different Docker hosts to communicate securely. It is commonly used in Docker Swarm and Kubernetes environments to enable multi-host networking.
+4. Macvlan Network: This network type allows you to assign a MAC address to a container, making it appear as a physical device on the network. This is useful for scenarios where containers need to be directly accessible on the local network.
+5. None Network: This mode disables all networking for a container. The container will not have any network interfaces, effectively isolating it from any network communication.
+The default network type in Docker is the Bridge Network.
