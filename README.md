@@ -6,13 +6,20 @@ Hypervisor is a software of virtualization.
 ESXI is a software from VMware for virtualization.
 Hyper-v is a software from Microsoft for virtualization.
 
+# Why containers are light weight than VMs?
+1. In VMs, each VM has its own OS, whereas in containers, all containers share the host OS kernel.
+2. VMs require more resources (CPU, memory, storage) to run multiple OS instances, while containers are more efficient as they run isolated applications on a single OS.
+3. Containers start up faster than VMs because they don't need to boot an entire OS.
+4. Containers use less disk space since they share common OS layers, while VMs require separate OS installations.
+5. Containers are more portable and easier to deploy across different environments compared to VMs.
+6. Containers provide better resource utilization and scalability compared to VMs.
 
 # Container -
 A container means a package that has needed things in place & shipping it.
 1. Container is a package with just application, application libraries & the OS Modules.
 2. If a container is working on my machines, it should also work on the other machines.
 3. With containers you dont spend too much on the hardware.
-4. With containers, you can start the container in leass than 1 sec & can stop the conatiner in sec
+4. With containers, you can start the container in leass than 1 sec & can stop the container in sec
 
 Serverless means your not responsible for managing the servers. Cloud provider is the responsible for managing the server.
 
@@ -104,7 +111,7 @@ if version is not mentioned then bydefault it will pull latest image
 ## Containers are immutable -
 There is no concept of start or stop.
 Just run , means container will be created, task will be executed & container will be killed.
-You cannot make chnages on a container, even if you make you would lose them & you have to make the changes on the image.
+You cannot make changes on a container, even if you make you would lose them & you have to make the changes on the image.
 
 Immutable which cannot be changed
 Mutable which can be changed.
