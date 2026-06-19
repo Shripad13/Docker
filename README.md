@@ -6,6 +6,23 @@ Hypervisor is a software of virtualization.
 ESXI is a software from VMware for virtualization.
 Hyper-v is a software from Microsoft for virtualization.
 
+
+# What is Bare-Metal?
+In DevOps, bare-metal refers to running software directly on physical hardware without a virtualization layer (like a hypervisor, VM, or container abstraction in between).
+Bare-metal = physical server + operating system installed directly on it
+
+# What is Virtual Machine?
+A virtual machine (VM) is a software emulation of a physical computer that runs an operating system and applications just like a physical machine. It allows multiple VMs to run on a single physical host, each with its own isolated environment, including its own OS, CPU, memory, and storage. VMs are created and managed using hypervisor software, which allocates resources from the physical host to each VM. This technology enables efficient use of hardware resources, flexibility in deployment, and isolation between different workloads.
+
+Setup                        Description
+Bare-metal              App runs directly on physical hardware
+Virtual machine (VM)    App runs inside a virtual environment created by hypervisor
+Containers (Docker/K8s) App runs in lightweight isolated environments sharing OS
+
+Bare-metal setup --> Hardware → OS → Application
+VM setup         --> Hardware → Hypervisor → VM → OS → Application
+Container setup  --> Hardware → OS → Container runtime → Containers → Application
+
 # Why containers are light weight than VMs?
 1. In VMs, each VM has its own OS, whereas in containers, all containers share the host OS kernel.
 2. VMs require more resources (CPU, memory, storage) to run multiple OS instances, while containers are more efficient as they run isolated applications on a single OS.
@@ -54,6 +71,7 @@ Docker (it has podman which is offered by Redhat)
 
 ############################################################################################
 
+> Dockerfile ---Build--->>  Docker Image ----Run--->> Docker Container
 
 ## Containerization - 
 1. Build own containers using the base images from docker hub.
@@ -148,6 +166,13 @@ docker network create my-bridge
 docker run --network my-bridge --name web nginx
 docker run --network my-bridge --name app my-app
 Here, web and app can communicate using container names (web, app).
+\\
+docker network ls
+docker network rm -f my-bridge
+docker network  create my-docker-bridge
+docker run -d --name nginx-network-test --network my-docker-bridge nginx:latest
+docker network inspect  nginx-network-test|grep "NetworkMode"
+\\
 
 ############################################################################################
 
