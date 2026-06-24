@@ -131,7 +131,7 @@ There is no concept of start or stop.
 Just run , means container will be created, task will be executed & container will be killed.
 You cannot make changes on a container, even if you make you would lose them & you have to make the changes on the image.
 
-Immutable which cannot be changed
+Immutable (Unchangeable) which cannot be changed
 Mutable which can be changed.
 
 Containers are not like OS, they are meant to run a single process at a time.
