@@ -1,5 +1,24 @@
 # Docker
 
+Phrase  "Works on my machine?"
+This is the problem Docker kills.
+
+Container - A running box that holds your app & its dependencies.
+Image - Recipe of container.
+Dockerfile - Plain text file with instructions to build the image.
+
+1. docker build -t myapp .
+2. docker run -p 3000:3000 myapp
+3. docker ps
+4. docker stop <containerID>
+5. docker compose up  ---> starts ur whole stack in 1 command - App+DB+cache all together
+
+docker-compose.yml in this you can define APP+DB+RedisCache
+then type docker compose up and everything starts together, connected working.
+
+##
+
+
 A one physical machine is capital intensive 
 
 Hypervisor is a software of virtualization.
@@ -294,6 +313,12 @@ ls means ENTRYPOINT, -ltr means CMD
 In docker, if you mention any process by in a JSON format, it will be process of its own where the parent process id directly 1 which is the system process.
 
 
+ENTRYPOINT ["java", "-jar", "app.jar"]
+means that whenever a container starts from this image, Docker will execute:
+java -jar app.jar
+Doesn't invoke a shell.
+Avoids shell parsing issues.
+
 ## Docker containers stores at - 
 /var/lib/containers/storage/overlay-containers/
 
@@ -394,6 +419,7 @@ RUN: Executes a command and saves the results as a new layer in the image.
 MAINTAINER: The author or maintainer of the image. [Deprecated]
 LABEL: A key-value pair to store metadata about the container.
 BUILD: Defines a variable to pass to the build command.
+FOREGROUND - A process run as Active process of container
 
 
 > Dockerfile ---Build--->>  Docker Image ----Run--->> Docker Container
@@ -449,3 +475,43 @@ Docker supports several types of networks to facilitate communication between co
 4. Macvlan Network: This network type allows you to assign a MAC address to a container, making it appear as a physical device on the network. This is useful for scenarios where containers need to be directly accessible on the local network.
 5. None Network: This mode disables all networking for a container. The container will not have any network interfaces, effectively isolating it from any network communication.
 The default network type in Docker is the Bridge Network.
+
+
+# Akshat Course
+You can use Different name as well instead of Dockerfile
+To avoid layers of images we use multiple commands in RUN with &&
+
+Alpine - Very Small in size linux based image (yum package)
+SLIM   - Larger than alpine, Most Used for Production 
+distroless - Very Secure, No shell, No Package Manger, very small attack surface, debug is difficult.
+
+# Optmization of Docker - 
+Use Multi stage build
+Use alpine or slim for small base image
+Combine Multple RUN commands
+Use .dockerignore to remove unnecessary files.
+RUn as a non-root user
+Clean package cache
+Remove unnecessary packages
+Copy only the required files
+
+
+
+ENTRYPOINT ["java", "-jar", "app.jar"] 
+
+## OOM killed
+docker ps -a
+docker inspect
+docker stats         --> Check utilization
+Check appln logs
+Memory leak for large file loading
+
+cgroup1 v1 details will be in below file once you limit :
+cgroup is control group
+cat /sys/fs/cgroup/memory/memory.limit_in_bytes
+
+# get the PID of container from below command
+docker inspect -f '{{.State.Pid}}' <ContainerName>
+ls -l /proc/9837/ns  ---> namespace for PID
+
+> Which namespace does Docker use by default?
