@@ -191,7 +191,7 @@ docker network rm -f my-bridge
 docker network  create my-docker-bridge
 docker run -d --name nginx-network-test --network my-docker-bridge nginx:latest
 docker network inspect  nginx-network-test|grep "NetworkMode"
-\\
+\\****
 
 ############################################################################################
 
@@ -299,12 +299,18 @@ Use Docker Hub or Amazon ECR for image storage
 
 CMD & ENTRYPOINT are a kind of startup for container
 
-Values in ENTRYPOINT cannot be overriden
-Values in CMD can be Overriden
+Values in ENTRYPOINT cannot be overriden during the runtime
+Values in CMD can be Overriden during the runtime
 
 1. you can have n number of CMD, but only the latest will be considered in the Dockerfile
 2. CMD is typically used to pass the arguments (that means values mentioned in CMD can be overriden)
 3. Values in ENTRYPOINT cannot be overriden
+
+When you want to use CMD & ENTRYPOINT together?
+ENTRYPOINT ["ping] --> It will not overridden
+CMD ["google.com]  --> It can be overridden during runtime
+
+lets say if we want to change google.com to flipkart.com then you can run flipkart.com in runtime.
 
 Ex - 
  $ ls -ltr
