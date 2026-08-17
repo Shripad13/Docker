@@ -7,6 +7,13 @@
 
 # Stage 1 - Build
 FROM node:18 AS builder
+
+RUN apt-get update && apt-get install -y \
+    git \
+    curl \
+    unzip \
+    zip \
+    htop
 WORKDIR /app
 COPY package*.json ./
 RUN npm install --production=false
