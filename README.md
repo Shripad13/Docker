@@ -521,3 +521,83 @@ docker inspect -f '{{.State.Pid}}' <ContainerName>
 ls -l /proc/9837/ns  ---> namespace for PID
 
 > Which namespace does Docker use by default?
+
+# Docker Compose
+Docker Compose is a tool for defining and running multi-container Docker applications. 
+Instead of running complex, individual docker run commands for your frontend, backend, and database, you describe your entire application stack in a single configuration file.
+With a single command, Docker Compose automatically creates, links, and starts all the services, networks, and storage volumes your application needs.
+
+#  How it Works
+1. Define the environment: Create a Dockerfile for each separate service so it can be reproduced anywhere.
+2. Define the application stack: Outline your services, ports, environment variables, and volumes inside a single configuration file named compose.yaml (or docker-compose.yml).
+3. Run the application: Execute docker compose up in your terminal to build and start your entire app seamlessly.
+
+
+🌟 Key BenefitsSingle-command control: 
+Start (docker compose up) and stop (docker compose down) your entire environment instantly.
+Isolated networks: Compose automatically creates a single, default network for your services so they can talk to each other safely using just their container names.
+Environment consistency: Ensures that every developer on a team runs the exact same setup on their local machine, eliminating the "works on my machine" problem.
+Data persistence: Automatically preserves volume data so your database contents aren't lost when containers are stopped.
+
+📄 Example of a Compose FileBelow is a simple example of a compose.yaml file that links a web application to a PostgreSQL database:
+services:
+  web:
+    build: .
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+  db:
+    image: postgres:15
+    environment:
+      POSTGRES_PASSWORD: secret_password
+
+
+🚀 Core CLI Commands
+docker compose up - Starts all containers in the foreground. Use -d to run them in the background.
+docker compose down - Stops all running containers and removes networks.
+docker compose ps - Lists the current status of the containers in your stack.
+docker compose logs - Streams the log outputs from all running services simultaneously.
+
+
+# Clear and Rerun
+docker-compose down -v
+docker-compose up --build
+docker logs dream-vacation-mysql
+
+Error1:
+Creating dream-vacation-mysql ... done
+Creating dream-vacation-backend ...
+Creating dream-vacation-backend ... error
+
+ERROR: for dream-vacation-backend  Cannot start service backend: failed to set up container networking: driver failed programming external connectivity on endpoint dream-vacation-backend (ae67c55a31c8697ddff734810272e78c29bdb236389645e5f4f7646894360192): failed to bind host port 0.0.0.0:3001/tcp: address already in use
+Check - sudo lsof -i :3001
+
+1. Time-out error during frontend npm install process
+npm ERR! code ERR_SOCKET_TIMEOUT
+npm ERR! network Socket timeout
+Even though your internet is working fine, this happens surprisingly often on frontend apps due to the larger number of nested dependencies, especially with React (react-scriptsetc.).
+
+Run - npm install --fetch-retries=5 --fetch-retry-mintimeout=20000 --fetch-retry-maxtimeout=60000
+
+2. Access denied for user ‘root’@’localhost’
+Error ensuring table "destinations": Access denied for user 'root'@'localhost'
+Ensure your DB-USER is set to the right username if it isn’t “root” or grant the root user the right privileges to read/write to your database.
+
+Login to sudo mysql -u root -p
+CHeck for privilegese- SHOW GRANTS FOR 'root'@'localhost';
+
+If root doesn't have access to the DB you're trying to use, grant access like this (from within MySQL):
+
+GRANT ALL PRIVILEGES ON your_database.* TO 'root'@'localhost';
+FLUSH PRIVILEGES;
+
+
+3. Permission denied for Docker daemon
+Error2:permission denied while trying to connect to the Docker daemon socket at unix:///var/run/docker.sock
+
+Your current user doesn’t have permission to access Docker without sudo.
+
+Solution - Run this command
+sudo usermod -aG docker $USER
+Check with - docker ps
