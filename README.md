@@ -331,8 +331,11 @@ Avoids shell parsing issues.
 ## How to publish the Docker images to docker hub?
 
  $ docker login docker.io
---> enter your username & pwd
-
+--> enter your username & pwd for authentication
+ $ docker tag simplecalculaor-multistage:latest batminton98/simplecalculaor-multistage:v1
+ $ docker push batminton98/simplecalculaor-multistage:v1
+ $ docker tag mysql:8.0 batminton98/mysql:8.0-v1
+ $ docker push batminton98/mysql:8.0-v1
  $ docker push docker.io/sanraman/expense-base/frontend:v1
 
 ___________________________________________________________
@@ -459,6 +462,8 @@ It depends on what your application & business required.
 ## multi-stage build
 A multi-stage build in Docker is a technique that allows you to use multiple FROM statements in a single Dockerfile—each one creating a separate build stage. This helps you build software in one stage and then copy only the necessary artifacts into a smaller, cleaner final image.
 
+In Multi stage Build Docker file will have n number of stages but final stage will have minimal size of image
+
 # Why it’s useful ?
 Produces much smaller images
 Keeps build tools and dependencies out of the final image
@@ -468,6 +473,15 @@ Makes builds more efficient and organized
 ## How it works ?
 The build stage installs dependencies and compiles the code.
 The final stage starts clean (nginx), copies only the compiled output, and excludes all build-time dependencies.
+
+# Distroless images
+Distroless images are minimal container base images that contain only your application and its runtime dependencies, completely stripped of a standard Linux operating system distribution
+
+what is the one of the issue with docker containers and how did you solve it?
+Previously we were using Ubunt base images and Java/Python runtime images which were exposed to some kind of vulnerability by hackers
+Found some issues with existing images, and we moved to python distroless images which have only python runtime , also it does not have some basic packages like curl, zip, find, so it was providing the hisghest level of security, after implementing the distroless images we are safe to say that pur application not exposed to OS or application vulnerabilities.
+
+with Distroless images we are not only reducing the sixze of imgae but also containers runnign securely
 
 # what is Mutable & immutable Infrastructure?
 Immutable Infrastructure is a concept where once a server or component is deployed, it is never modified. If an update or change is needed, a new version of the server or component is built and deployed, replacing the old one. This approach ensures consistency, reduces configuration drift, and simplifies rollback processes.   
@@ -562,8 +576,22 @@ docker compose logs - Streams the log outputs from all running services simultan
 
 # Clear and Rerun
 docker-compose down -v
-docker-compose up --build
+docker-compose down -v
+docker system prune -f
+docker-compose up --build -d
+docker compose logs mysql
+
 docker logs dream-vacation-mysql
+
+To restart only frontend - docker compose up -d --no-deps --build frontend
+cd /home/azureuser/Dream-Vacation-App/
+docker compose up -d --no-deps --build backend
+
+
+# To check logs
+docker compose logs -f backend
+docker compose exec -it mysql mysql -u root -pyourdbpassword
+docker compose logs -f frontend
 
 Error1:
 Creating dream-vacation-mysql ... done
