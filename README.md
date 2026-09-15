@@ -105,7 +105,32 @@ A process to make your own images by taking the references as base images is cal
 
 > dockerfile commands -  https://docs.docker.com/reference/dockerfile/
 
+# What are the best practices of Docker Imaging?
+1. Size of the Docker Image has to be as minimal as possible.
+2. Security of the Images, It should be zero to none vulnerabilities as per your organization.
+3. Always ensure to install what is really needed, to keep image simple & secure.
+4. Ensure containers dont run as a root user
 
+# Why Docker containers should not be run with root user in linux machines
+
+I follow the principle of least privilege and avoid running application containers as root. 
+A root process inside a container has unnecessary privileges, and if the application is compromised, those privileges increase the potential impact. 
+I create a dedicated non-root UID/GID in the Dockerfile and use USER, or enforce runAsUser at the Kubernetes level. 
+I also combine this with dropping unnecessary Linux capabilities, read-only root filesystems, seccomp/AppArmor, resource limits, and avoiding privileged containers or Docker socket mounts.
+
+EX - 
+---
+FROM ubuntu
+
+RUN apt-get update && apt-get install -y nginx
+
+RUN useradd -m -u 1000 appuser
+
+USER appuser
+
+CMD ["nginx", "-g", "daemon off;"]
+
+---
 
 ## AMI
 Base AMI -------> Configure the OS, Install the needed packages -----> AMI
@@ -353,8 +378,8 @@ sudo growpart /dev/xvda 4   (4 is the partition number)
 
 3. Expand the Logical Volume of MountPoint
 
-sudo lvmextend -l +50%FREE /dev/mapper/RootVG-homeVol
-sudo lvmextend -l +100%FREE /dev/mapper/RootVG-homeVol
+sudo lvextend -l +50%FREE /dev/mapper/RootVG-homeVol
+sudo lvextend -l +100%FREE /dev/mapper/RootVG-homeVol
 sudo lvextend -r -L +6G  /dev/mapper/RootVG-homeVol
 
 4. Expand the FileSystem
@@ -521,3 +546,12 @@ docker inspect -f '{{.State.Pid}}' <ContainerName>
 ls -l /proc/9837/ns  ---> namespace for PID
 
 > Which namespace does Docker use by default?
+
+
+# Docker commands - 
+docker run -d <imageName>
+docker images 
+docker ps
+docker ps -a 
+docker logs <container ID>
+docker run  <imageName> whoami ----> To check how docker container is running with which user
