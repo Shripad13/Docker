@@ -356,8 +356,11 @@ Avoids shell parsing issues.
 ## How to publish the Docker images to docker hub?
 
  $ docker login docker.io
---> enter your username & pwd
-
+--> enter your username & pwd for authentication
+ $ docker tag simplecalculaor-multistage:latest batminton98/simplecalculaor-multistage:v1
+ $ docker push batminton98/simplecalculaor-multistage:v1
+ $ docker tag mysql:8.0 batminton98/mysql:8.0-v1
+ $ docker push batminton98/mysql:8.0-v1
  $ docker push docker.io/sanraman/expense-base/frontend:v1
 
 ___________________________________________________________
@@ -484,6 +487,8 @@ It depends on what your application & business required.
 ## multi-stage build
 A multi-stage build in Docker is a technique that allows you to use multiple FROM statements in a single Dockerfile—each one creating a separate build stage. This helps you build software in one stage and then copy only the necessary artifacts into a smaller, cleaner final image.
 
+In Multi stage Build Docker file will have n number of stages but final stage will have minimal size of image
+
 # Why it’s useful ?
 Produces much smaller images
 Keeps build tools and dependencies out of the final image
@@ -493,6 +498,15 @@ Makes builds more efficient and organized
 ## How it works ?
 The build stage installs dependencies and compiles the code.
 The final stage starts clean (nginx), copies only the compiled output, and excludes all build-time dependencies.
+
+# Distroless images
+Distroless images are minimal container base images that contain only your application and its runtime dependencies, completely stripped of a standard Linux operating system distribution
+
+what is the one of the issue with docker containers and how did you solve it?
+Previously we were using Ubunt base images and Java/Python runtime images which were exposed to some kind of vulnerability by hackers
+Found some issues with existing images, and we moved to python distroless images which have only python runtime , also it does not have some basic packages like curl, zip, find, so it was providing the hisghest level of security, after implementing the distroless images we are safe to say that pur application not exposed to OS or application vulnerabilities.
+
+with Distroless images we are not only reducing the sixze of imgae but also containers runnign securely
 
 # what is Mutable & immutable Infrastructure?
 Immutable Infrastructure is a concept where once a server or component is deployed, it is never modified. If an update or change is needed, a new version of the server or component is built and deployed, replacing the old one. This approach ensures consistency, reduces configuration drift, and simplifies rollback processes.   
@@ -547,6 +561,7 @@ ls -l /proc/9837/ns  ---> namespace for PID
 
 > Which namespace does Docker use by default?
 
+<<<<<<< HEAD
 
 # Docker commands - 
 docker run -d <imageName>
@@ -555,3 +570,98 @@ docker ps
 docker ps -a 
 docker logs <container ID>
 docker run  <imageName> whoami ----> To check how docker container is running with which user
+=======
+# Docker Compose
+Docker Compose is a tool for defining and running multi-container Docker applications. 
+Instead of running complex, individual docker run commands for your frontend, backend, and database, you describe your entire application stack in a single configuration file.
+With a single command, Docker Compose automatically creates, links, and starts all the services, networks, and storage volumes your application needs.
+
+#  How it Works
+1. Define the environment: Create a Dockerfile for each separate service so it can be reproduced anywhere.
+2. Define the application stack: Outline your services, ports, environment variables, and volumes inside a single configuration file named compose.yaml (or docker-compose.yml).
+3. Run the application: Execute docker compose up in your terminal to build and start your entire app seamlessly.
+
+
+🌟 Key BenefitsSingle-command control: 
+Start (docker compose up) and stop (docker compose down) your entire environment instantly.
+Isolated networks: Compose automatically creates a single, default network for your services so they can talk to each other safely using just their container names.
+Environment consistency: Ensures that every developer on a team runs the exact same setup on their local machine, eliminating the "works on my machine" problem.
+Data persistence: Automatically preserves volume data so your database contents aren't lost when containers are stopped.
+
+📄 Example of a Compose FileBelow is a simple example of a compose.yaml file that links a web application to a PostgreSQL database:
+services:
+  web:
+    build: .
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+  db:
+    image: postgres:15
+    environment:
+      POSTGRES_PASSWORD: secret_password
+
+
+🚀 Core CLI Commands
+docker compose up - Starts all containers in the foreground. Use -d to run them in the background.
+docker compose down - Stops all running containers and removes networks.
+docker compose ps - Lists the current status of the containers in your stack.
+docker compose logs - Streams the log outputs from all running services simultaneously.
+
+
+# Clear and Rerun
+docker-compose down -v
+docker-compose down -v
+docker system prune -f
+docker-compose up --build -d
+docker compose logs mysql
+
+docker logs dream-vacation-mysql
+
+To restart only frontend - docker compose up -d --no-deps --build frontend
+cd /home/azureuser/Dream-Vacation-App/
+docker compose up -d --no-deps --build backend
+
+
+# To check logs
+docker compose logs -f backend
+docker compose exec -it mysql mysql -u root -pyourdbpassword
+docker compose logs -f frontend
+
+Error1:
+Creating dream-vacation-mysql ... done
+Creating dream-vacation-backend ...
+Creating dream-vacation-backend ... error
+
+ERROR: for dream-vacation-backend  Cannot start service backend: failed to set up container networking: driver failed programming external connectivity on endpoint dream-vacation-backend (ae67c55a31c8697ddff734810272e78c29bdb236389645e5f4f7646894360192): failed to bind host port 0.0.0.0:3001/tcp: address already in use
+Check - sudo lsof -i :3001
+
+1. Time-out error during frontend npm install process
+npm ERR! code ERR_SOCKET_TIMEOUT
+npm ERR! network Socket timeout
+Even though your internet is working fine, this happens surprisingly often on frontend apps due to the larger number of nested dependencies, especially with React (react-scriptsetc.).
+
+Run - npm install --fetch-retries=5 --fetch-retry-mintimeout=20000 --fetch-retry-maxtimeout=60000
+
+2. Access denied for user ‘root’@’localhost’
+Error ensuring table "destinations": Access denied for user 'root'@'localhost'
+Ensure your DB-USER is set to the right username if it isn’t “root” or grant the root user the right privileges to read/write to your database.
+
+Login to sudo mysql -u root -p
+CHeck for privilegese- SHOW GRANTS FOR 'root'@'localhost';
+
+If root doesn't have access to the DB you're trying to use, grant access like this (from within MySQL):
+
+GRANT ALL PRIVILEGES ON your_database.* TO 'root'@'localhost';
+FLUSH PRIVILEGES;
+
+
+3. Permission denied for Docker daemon
+Error2:permission denied while trying to connect to the Docker daemon socket at unix:///var/run/docker.sock
+
+Your current user doesn’t have permission to access Docker without sudo.
+
+Solution - Run this command
+sudo usermod -aG docker $USER
+Check with - docker ps
+>>>>>>> cc1272c8dd488efc64be093624df66b477679c49

@@ -34,6 +34,11 @@
  $ docker container stop my-ubuntu-container
  $ docker container rm my-ubuntu-container
 
+ $ docker rmi -f <image_id>
+ Remove ALL unused images:Deletes any image that is not currently actively running in a container.
+  $ docker image prune -a
+
+
  $ docker run -d --name nginx_container -p 8080:80 nginx_app:latest
 
 $ docker ps
