@@ -665,3 +665,135 @@ Solution - Run this command
 sudo usermod -aG docker $USER
 Check with - docker ps
 >>>>>>> cc1272c8dd488efc64be093624df66b477679c49
+
+
+
+# Docker lifecycle -
+Docker lifecycle refers to the various phases and operational states a Docker container moves through, from its initial creation as an image blueprint to its execution, management, and ultimate deletion.
+
+1. Dockerfile: A text file containing instructions to assemble an image.
+2. Docker Image: A read-only, immutable blueprint created via docker build.
+3. Docker Registry: A repository (like Docker Hub) where images are pushed and pulled.
+4. Docker Container: The live, runtime instance of that image.
+
+docker create
+docker rundocker pause
+docker stop
+docker rm -f
+
+• docker run -d <image>: Creates and starts a container in detached (background) mode.
+• docker ps -a: Displays all containers on the host alongside their current lifecycle state.
+• docker logs <container>: Inspects output from the application process.
+• docker system prune: Cleans up stopped containers, unused networks, and dangling images to free up space.
+
+To check overall disk space used by Docker images, containers, and local volumes across the entire daemon, run:
+ $ docker system df
+
+#  Run df -h to check overall filesystem disk space and mounts inside the container
+ $ docker exec -it <container_name_or_id> df -h
+
+# Check size of a specific directory inside the container
+docker exec -it <container_name_or_id> du -sh /path/to/directory
+
+
+# How to Bind a Storage Mount Point
+
+docker run -d \
+  --name my_container \
+  --mount type=bind,source=/absolute/path/on/host,target=/path/in/container \
+  nginx
+
+
+# Why do you use multi-stage Docker builds?
+ I use multi-stage Docker builds to separate the build environment from the runtime environment. 
+ In the builder stage, I install dependencies, compile the application, and generate the required artifacts. 
+ In the final stage, I copy only those artifacts into a lightweight runtime image. 
+ This reduces image size, minimizes unnecessary tools in production, improves deployment efficiency, and helps reduce the attack surface."
+
+
+1. Bind mount — mount a host directory into a container
+   # Mount the current host directory into /app inside the container
+docker run -d \
+  --name mycontainer \
+  -v $(pwd):/app \
+  python:3.11-slim
+
+-d — runs the container in the background.
+--name — assigns a name to the container.
+-v $(pwd):/app — mounts the current host directory into /app inside the container.
+
+Changes made to shared files are visible on both sides, subject to permissions and mount options.
+
+Interview answer: A bind mount maps a specific file or directory from the host machine into a container. It is useful for development, sharing configuration files, and accessing host files.   
+
+2. Named volume — persist application data
+# Create a named Docker volume
+ $ docker volume create myvolume
+
+# Mount the volume inside a container
+docker run -d \
+  --name mycontainer \
+  -v myvolume:/data \
+  nginx:alpine
+
+ $ docker volume create —>> creates a managed Docker volume.
+
+-v myvolume:/data —>> mounts the named volume at /data inside the container.
+
+Interview answer: A named volume is managed by Docker and is commonly used to persist database files and application data beyond a container's lifecycle.
+
+3. Mount a volume using --mount
+  # Mount a named volume into the container
+
+ $ docker run -d \
+    --name mycontainer \
+    --mount source=myvolume,target=/data \
+    nginx:alpine
+
+Interview answer: --mount provides a more explicit way to configure mounts than -v, making the source and target easier to understand.
+
+
+4. Read-only volume mount
+# Mount the host directory as read-only inside the container
+docker run -d \
+  --name webserver \
+  -v $(pwd)/html:/usr/share/nginx/html:ro \
+  nginx:alpine
+
+:ro — prevents the container from writing to the mounted directory.
+
+Useful for static website files and configuration files that the application should not modify
+
+5. Inspect and manage Docker volumes
+
+# List all Docker volumes
+docker volume ls
+
+# Inspect a specific volume
+docker volume inspect myvolume
+
+# Remove a volume that is no longer needed
+docker volume rm myvolume
+
+# Remove unused volumes
+docker volume prune
+
+
+6. Mount a volume with Docker Compose
+compose.yaml
+services:
+  app:
+    image: nginx:alpine
+    container_name: webserver
+    ports:
+      - "8080:80"
+    volumes:
+      # Named volume for persistent application data
+      - appdata:/data
+
+      # Bind mount for website files
+      - ./html:/usr/share/nginx/html:ro
+  
+>  If asked how you persist MySQL data, explain that you mount a named volume at /var/lib/mysql. This keeps database files outside the container's writable layer, so recreating the container does not normally remove the data.  
+>
+> 
