@@ -561,7 +561,6 @@ ls -l /proc/9837/ns  ---> namespace for PID
 
 > Which namespace does Docker use by default?
 
-<<<<<<< HEAD
 
 # Docker commands - 
 docker run -d <imageName>
@@ -570,7 +569,6 @@ docker ps
 docker ps -a 
 docker logs <container ID>
 docker run  <imageName> whoami ----> To check how docker container is running with which user
-=======
 # Docker Compose
 Docker Compose is a tool for defining and running multi-container Docker applications. 
 Instead of running complex, individual docker run commands for your frontend, backend, and database, you describe your entire application stack in a single configuration file.
@@ -664,7 +662,6 @@ Your current user doesn’t have permission to access Docker without sudo.
 Solution - Run this command
 sudo usermod -aG docker $USER
 Check with - docker ps
->>>>>>> cc1272c8dd488efc64be093624df66b477679c49
 
 
 
